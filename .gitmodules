@@ -1,0 +1,3 @@
+[submodule "forcedroid"]
+	path = forcedroid
+	url = https://github.com/forcedotcom/SalesforceMobileSDK-Android
