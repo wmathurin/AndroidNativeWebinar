@@ -33,8 +33,11 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -49,7 +52,7 @@ import com.salesforce.androidsdk.ui.sfnative.SalesforceActivity;
 /**
  * Main activity
  */
-public class MainActivity extends SalesforceActivity {
+public class MainActivity extends SalesforceActivity implements OnItemClickListener {
 
     private RestClient client;
     private ArrayAdapter<Merchandise> listAdapter;
@@ -75,8 +78,28 @@ public class MainActivity extends SalesforceActivity {
 		listAdapter = new ArrayAdapter<Merchandise>(this, android.R.layout.simple_list_item_1, new ArrayList<Merchandise>());
 		listView.setAdapter(listAdapter);
 		
+		// Setup list item click listener
+		listView.setOnItemClickListener(this);
+		
 		super.onResume();
 	}		
+
+	/**
+	 * Called when list item is clicked
+	 * @param parent
+	 * @param view
+	 * @param position
+	 * @param id
+	 */
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		Merchandise merchandise = listAdapter.getItem(position);
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra("id", merchandise.id);
+        intent.putExtra("name", merchandise.name);
+        intent.putExtra("quantity", merchandise.quantity);
+        intent.putExtra("price", merchandise.price);
+        startActivity(intent);
+	}
 	
 	@Override
 	public void onResume(RestClient client) {
