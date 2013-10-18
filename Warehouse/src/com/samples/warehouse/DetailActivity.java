@@ -28,6 +28,7 @@ package com.samples.warehouse;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 
 import com.salesforce.androidsdk.app.SalesforceSDKManager;
 import com.salesforce.androidsdk.rest.RestClient;
@@ -38,7 +39,11 @@ import com.salesforce.androidsdk.ui.sfnative.SalesforceActivity;
  */
 public class DetailActivity extends SalesforceActivity {
 
+	private String merchandiseId;
 	private RestClient client;
+	private EditText nameField;
+	private EditText priceField;
+	private EditText quantityField;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,8 +51,18 @@ public class DetailActivity extends SalesforceActivity {
 
 		// Setup view
 		setContentView(R.layout.detail);
+		nameField = (EditText) findViewById(R.id.name_field);
+		priceField = (EditText) findViewById(R.id.price_field);
+		quantityField = (EditText) findViewById(R.id.quantity_field);
+
+		// Populate fields with data from intent
+		Bundle extras = getIntent().getExtras();
+		merchandiseId = extras.getString("id");
+		nameField.setText(extras.getString("name"));
+		priceField.setText(extras.getDouble("price") + "");
+		quantityField.setText(extras.getInt("quantity") + "");
 	}
-	
+
 	@Override
 	public void onResume(RestClient client) {
         // Keeping reference to rest client
