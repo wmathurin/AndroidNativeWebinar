@@ -26,12 +26,18 @@
  */
 package com.samples.warehouse;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
 import com.salesforce.androidsdk.app.SalesforceSDKManager;
 import com.salesforce.androidsdk.rest.RestClient;
+import com.salesforce.androidsdk.rest.RestClient.AsyncRequestCallback;
+import com.salesforce.androidsdk.rest.RestRequest;
+import com.salesforce.androidsdk.rest.RestResponse;
 import com.salesforce.androidsdk.ui.sfnative.SalesforceActivity;
 
 /**
@@ -77,4 +83,48 @@ public class DetailActivity extends SalesforceActivity {
 	public void onLogoutClick(View v) {
 		SalesforceSDKManager.getInstance().logout(this);
 	}
+	
+	/**
+	 * Called when "Update" button is clicked. 
+	 * 
+	 * @param v
+	 */
+	public void onUpdateClick(View v) {
+		Map<String, Object> fields = new HashMap<String, Object>();
+		fields.put("Name", nameField.getText().toString());
+		fields.put("Quantity__c", quantityField.getText().toString());
+		fields.put("Price__c", priceField.getText().toString());
+		saveData(merchandiseId, fields);
+	}
+	
+	/**
+	 * Helper method to save details back to server
+	 * @param id
+	 * @param fields
+	 */
+	private void saveData(String id, Map<String, Object> fields)  {
+		RestRequest restRequest;
+		try {
+			restRequest = RestRequest.getRequestForUpdate(getString(R.string.api_version), "Merchandise__c", id, fields);
+		} catch (Exception e) {
+			MainActivity.showError(this, e);
+			return;
+		}
+		
+		client.sendAsync(restRequest, new AsyncRequestCallback() {
+			@Override
+			public void onSuccess(RestRequest request, RestResponse result) {
+				try {
+					DetailActivity.this.finish();
+				} catch (Exception e) {
+					MainActivity.showError(DetailActivity.this, e);
+				}
+			}
+			
+			@Override
+			public void onError(Exception e) {
+				MainActivity.showError(DetailActivity.this, e);
+			}
+		});
+	}	
 }

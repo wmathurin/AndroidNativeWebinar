@@ -4,11 +4,12 @@
 	<string name="app_name"><b>Warehouse</b></string>
     <string name="welcome">Welcome %s</string>
 	<string name="logout_button">Logout</string>
-	<string name="api_version">v23.0</string>
+	<string name="api_version">v29.0</string>
 
 		<!-- Detail screen -->
 	<string name="name_label">Name</string>
 	<string name="price_label">Price</string>
 	<string name="quantity_label">Quantity</string>
-	
+	<string name="update_button">Update</string>	
+		
 </resources>
