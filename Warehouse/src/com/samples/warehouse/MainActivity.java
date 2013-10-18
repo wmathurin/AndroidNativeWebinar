@@ -30,6 +30,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -51,8 +52,9 @@ import com.salesforce.androidsdk.ui.sfnative.SalesforceActivity;
 public class MainActivity extends SalesforceActivity {
 
     private RestClient client;
-    private ArrayAdapter<String> listAdapter;
-	
+    private ArrayAdapter<Merchandise> listAdapter;
+    private ListView listView;
+    	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -66,9 +68,12 @@ public class MainActivity extends SalesforceActivity {
 		// Hide everything until we are logged in
 		findViewById(R.id.root).setVisibility(View.INVISIBLE);
 
-		// Create list adapter
-		listAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new ArrayList<String>());
-		((ListView) findViewById(R.id.contacts_list)).setAdapter(listAdapter);				
+		// Get handle for list view
+		listView = (ListView) findViewById(R.id.contacts_list);
+
+		// Setup list adapter
+		listAdapter = new ArrayAdapter<Merchandise>(this, android.R.layout.simple_list_item_1, new ArrayList<Merchandise>());
+		listView.setAdapter(listAdapter);
 		
 		super.onResume();
 	}		
@@ -99,7 +104,7 @@ public class MainActivity extends SalesforceActivity {
 	 * @param soql
 	 */
 	private void fetchDataForList()  {
-		String soql = "SELECT Name FROM Merchandise__c LIMIT 10";
+		String soql = "SELECT Name, Id, Price__c, Quantity__c FROM Merchandise__c LIMIT 10";
 		
 		RestRequest restRequest = null;
 		try {
@@ -116,7 +121,9 @@ public class MainActivity extends SalesforceActivity {
 					listAdapter.clear();
 					JSONArray records = result.asJSONObject().getJSONArray("records");
 					for (int i = 0; i < records.length(); i++) {
-						listAdapter.add(records.getJSONObject(i).getString("Name"));
+						JSONObject record = records.getJSONObject(i);
+						Merchandise merchandise = new Merchandise(record.getString("Name"), record.getString("Id"), record.getInt("Quantity__c"), record.getDouble("Price__c"));
+						listAdapter.add(merchandise);
 					}					
 				} catch (Exception e) {
 					showError(MainActivity.this, e);
@@ -139,5 +146,28 @@ public class MainActivity extends SalesforceActivity {
 	        	   Toast.LENGTH_LONG);
 		toast.show();
 	}
+	
+	
+	/**
+	 * Simple class to represent a Merchandise
+	 */
+	static class Merchandise {
+		public final String name;
+		public final String id;
+		public final int quantity;
+		public final double price;
+		
+		public Merchandise(String name, String id, int quantity, double price) {
+			this.name = name;
+			this.id = id;
+			this.quantity = quantity;
+			this.price = price;
+		}
+		
+		public String toString() {
+			return name;
+		}
+	}
+	
 	
 }
