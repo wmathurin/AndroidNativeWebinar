@@ -31,6 +31,7 @@ import java.util.ArrayList;
 
 import org.json.JSONArray;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -79,6 +80,9 @@ public class MainActivity extends SalesforceActivity {
 
 		// Show everything
 		findViewById(R.id.root).setVisibility(View.VISIBLE);
+		
+		// Fetch data for list
+		fetchDataForList();
 	}
 
 	/**
@@ -90,9 +94,21 @@ public class MainActivity extends SalesforceActivity {
 		SalesforceSDKManager.getInstance().logout(this);
 	}
 	
-	private void sendRequest(String soql) throws UnsupportedEncodingException {
-		RestRequest restRequest = RestRequest.getRequestForQuery(getString(R.string.api_version), soql);
-
+	/**
+	 * Helper method to fetch data from server and update list 
+	 * @param soql
+	 */
+	private void fetchDataForList()  {
+		String soql = "SELECT Name FROM Merchandise__c LIMIT 10";
+		
+		RestRequest restRequest = null;
+		try {
+			restRequest = RestRequest.getRequestForQuery(getString(R.string.api_version), soql);
+		} catch (UnsupportedEncodingException e) {
+			showError(MainActivity.this, e);
+			return;
+		}
+        
 		client.sendAsync(restRequest, new AsyncRequestCallback() {
 			@Override
 			public void onSuccess(RestRequest request, RestResponse result) {
@@ -103,16 +119,25 @@ public class MainActivity extends SalesforceActivity {
 						listAdapter.add(records.getJSONObject(i).getString("Name"));
 					}					
 				} catch (Exception e) {
-					onError(e);
+					showError(MainActivity.this, e);
 				}
 			}
 			
 			@Override
-			public void onError(Exception exception) {
-                Toast.makeText(MainActivity.this,
-                               MainActivity.this.getString(SalesforceSDKManager.getInstance().getSalesforceR().stringGenericError(), exception.toString()),
-                               Toast.LENGTH_LONG).show();
+			public void onError(Exception e) {
+				showError(MainActivity.this, e);
 			}
 		});
 	}
+	
+	/**
+	 * Helper method to show an error with a toast
+	 * @param e
+	 */
+	public static void showError(Context context, Exception e) {
+        Toast toast = Toast.makeText(context, context.getString(SalesforceSDKManager.getInstance().getSalesforceR().stringGenericError(), e.toString()),
+	        	   Toast.LENGTH_LONG);
+		toast.show();
+	}
+	
 }
