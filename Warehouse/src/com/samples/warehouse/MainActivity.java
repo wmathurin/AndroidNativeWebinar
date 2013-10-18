@@ -90,35 +90,6 @@ public class MainActivity extends SalesforceActivity {
 		SalesforceSDKManager.getInstance().logout(this);
 	}
 	
-	/**
-	 * Called when "Clear" button is clicked. 
-	 * 
-	 * @param v
-	 */
-	public void onClearClick(View v) {
-		listAdapter.clear();
-	}	
-
-	/**
-	 * Called when "Fetch Contacts" button is clicked
-	 * 
-	 * @param v
-	 * @throws UnsupportedEncodingException 
-	 */
-	public void onFetchContactsClick(View v) throws UnsupportedEncodingException {
-        sendRequest("SELECT Name FROM Contact");
-	}
-
-	/**
-	 * Called when "Fetch Accounts" button is clicked
-	 * 
-	 * @param v
-	 * @throws UnsupportedEncodingException 
-	 */
-	public void onFetchAccountsClick(View v) throws UnsupportedEncodingException {
-		sendRequest("SELECT Name FROM Account");
-	}	
-	
 	private void sendRequest(String soql) throws UnsupportedEncodingException {
 		RestRequest restRequest = RestRequest.getRequestForQuery(getString(R.string.api_version), soql);
 
